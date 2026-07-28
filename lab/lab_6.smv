@@ -1,0 +1,29 @@
+MODULE main
+
+  VAR
+    state : {locked, unlocked};
+
+IVAR
+
+  action : {none, payed, pushed};
+
+ASSIGN
+  init(state):=locked;
+next(state):=case 
+	       
+	       state  =locked & action = pushed: locked;
+	       state = locked & action = payed : unlocked;
+	       state = unlocked & action = pushed :locked;
+	       state = unlocked & action =payed :unlocked;
+	       TRUE : state;
+	       
+	       esac;
+	       
+
+	       
+	       
+	       
+	       
+
+	       
+LTLSPEC G (state = locked & action = pushed -> X (state = locked))
