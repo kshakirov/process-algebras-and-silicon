@@ -1,16 +1,21 @@
 MODULE main
 
   VAR
-    state : {locked, unlocked};
+    state : {locked, unlocked, fault};
 
 IVAR
 
-  action : {none, payed, pushed};
+  action : {none, payed, pushed, shortage, fix};
 
 ASSIGN
   init(state):=locked;
 next(state):=case 
-	       
+	       state= locked & action=shortage: fault;
+	       state= unlocked & action=shortage: fault;
+	       state=fault & action = fix: locked;
+	       state=fault & action=payed: locked;
+	       state=fault & action=pushed: locked;
+	       state=fault & action=shortage: fault;
 	       state  =locked & action = pushed: locked;
 	       state = locked & action = payed : unlocked;
 	       state = unlocked & action = pushed :locked;
@@ -26,4 +31,5 @@ next(state):=case
 	       
 
 	       
-LTLSPEC G (state = locked & action = pushed -> X (state = locked))
+  LTLSPEC G (state = locked & action = pushed -> X (state = locked))
+  LTLSPEC G (state = locked  -> F (state = unlocked))
