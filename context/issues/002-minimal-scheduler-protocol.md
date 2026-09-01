@@ -4,6 +4,8 @@
 
 Open.
 
+GitHub: <https://github.com/kshakirov/process-algebras-and-silicon/issues/1>
+
 ## Question
 
 What is the smallest explicit protocol between a client and the scheduler that

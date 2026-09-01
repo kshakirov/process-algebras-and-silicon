@@ -2,17 +2,14 @@
 
 Source: <https://github.com/kshakirov/process-algebras-and-silicon/issues>
 
-Snapshot time: 2026-08-25, Europe/Kiev.
+Snapshot time: 2026-09-01, Europe/Kiev.
 
 ## Snapshot
 
-The GitHub repository has Issues enabled, but the API returned zero open or
-closed issues.
+The GitHub repository has one open issue:
 
-```json
-[]
-```
+- [#1 — Define minimal scheduler protocol: submit to accepted](https://github.com/kshakirov/process-algebras-and-silicon/issues/1)
 
 This directory is reserved for verbatim local exports of GitHub Issues. Locally
-authored research issues remain one level above and must not be presented as
-GitHub issues until they are actually created there.
+authored research issues remain one level above. Issue 002 is now linked to
+GitHub Issue #1; the local page also contains the research-session progress log.

@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "number": 1,
+    "title": "Define minimal scheduler protocol: submit to accepted",
+    "state": "OPEN",
+    "url": "https://github.com/kshakirov/process-algebras-and-silicon/issues/1",
+    "createdAt": "2026-09-01T20:15:35Z",
+    "updatedAt": "2026-09-01T20:15:35Z",
+    "labels": []
+  }
+]
