@@ -15,39 +15,40 @@ defmodule BeamFsm.Scheduler do
     GenServer.call(__MODULE__, :get_status)
   end
 
-  @doc "Asynchronous dispatch"
-  def update_status do
-    GenServer.cast(__MODULE__, {:update_status})
+
+  @doc "Synchronous dispatch"
+  def update_status(counts) do
+    GenServer.call(__MODULE__, {:update_status, counts})
   end
 
+
+  @doc "Synchronous dispatch"
+  def increment_status do
+    GenServer.call(__MODULE__, :increment_status)
+  end
+
+  # @doc "Asynchronous dispatch"
+  # def update_status do
+  #   GenServer.cast(__MODULE__, {:update_status})
+  # end
+
   @impl true
-  def handle_cast(:update_status, _status) do
-    {:noreply, 1}
+  def handle_call({:update_status, counts} , _from, state) do
+    new_state = state + counts
+    {:reply, new_state ,  new_state}
+  end
+
+
+  @impl true
+  def handle_call(:increment_status, _from, state) do
+    new_state = state + 1
+    {:reply, new_state, new_state}
   end
 
   @impl true
   def handle_call(:get_status, _from, state) do
-    {:reply, 1, state}
+    {:reply, state, state}
   end
 
-  # # def start_link(_options) do
-  # #   pid = spawn_link(fn -> loop() end)
-  # #   Process.register(pid, __MODULE__)
-  # #   {:ok, pid}
-  # # end
 
-  # # def child_spec(options) do
-  # #   %{
-  # #     id: __MODULE__,
-  # #     start: {__MODULE__, :start_link, [options]}
-  # #   }
-  # # end
-
-  # defp loop do
-  #   receive do
-  #     message ->
-  #       IO.inspect(message, label: "Scheduler получил")
-  #       loop()
-  #   end
-  # end
 end
