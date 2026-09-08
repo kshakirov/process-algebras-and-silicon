@@ -2,17 +2,13 @@
 
 Source: <https://github.com/kshakirov/process-algebras-and-silicon/wiki>
 
-Snapshot time: 2026-08-25, Europe/Kiev.
+Snapshot time: 2026-09-08, Europe/Kiev.
 
 ## Snapshot
 
-The GitHub repository has Wiki enabled, but its Wiki Git repository does not yet
-exist. GitHub returned `Repository not found` for:
+The remote Wiki now contains its first research page:
 
-```text
-https://github.com/kshakirov/process-algebras-and-silicon.wiki.git
-```
+- [Actor–Mailbox Formal Model](Actor-Mailbox-Formal-Model.md)
 
-This normally means that no first Wiki page has been created. This directory is
-reserved for verbatim local copies once the remote Wiki contains pages. Locally
-authored project notes remain one level above and are not remote Wiki pages.
+Files in this directory are verbatim local mirrors of GitHub Wiki pages.
+Locally authored project notes remain one level above.
