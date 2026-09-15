@@ -9,10 +9,10 @@ defmodule BeamFsm.SchedulerTest do
   end
 
   test "increment_status" do
-    pid = start_supervised!({BeamFsm.Scheduler, %{counter: 0, fact: 0, predicate: true, task: nil, facts: []}})
+    pid = start_supervised!({BeamFsm.Scheduler, %{counter: 4, fact: 0, predicate: true, task: nil, facts: []}})
+    BeamFsm.Scheduler.increment_status(pid) 
     BeamFsm.Scheduler.increment_status(pid)
-    BeamFsm.Scheduler.increment_status(pid)
-    assert BeamFsm.Scheduler.get_status(pid) == 2
+    assert BeamFsm.Scheduler.get_status(pid) == 1000
   end
 
   test "update_status" do

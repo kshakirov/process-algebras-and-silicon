@@ -28,7 +28,11 @@ defmodule BeamFsm.Scheduler do
   @impl true
   def handle_call(:increment_status, _from, state) do
     new_state = %{state |  counter:  state.counter + 1}
-    {:reply, new_state, new_state}
+    case state.counter do
+      n when n < 5 ->      {:reply, new_state, new_state}
+      5            ->     {:reply, 1000, %{state |  counter:  1000}}
+    end
+
   end
 
   @impl true
