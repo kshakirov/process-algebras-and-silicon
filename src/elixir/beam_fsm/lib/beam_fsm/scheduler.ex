@@ -45,9 +45,9 @@ defmodule BeamFsm.Scheduler do
 
   @impl true
   def handle_call({:add_fact, fact}, _from, state) do
-    new_state = %{state |  fact:  fact}
-
-    {:reply,new_state, new_state}
+    new_state = %{state |  facts:  [fact | state.facts]}
+    result = state.task.(fact.value)
+    {:reply,result, new_state}
   end
 
 end
