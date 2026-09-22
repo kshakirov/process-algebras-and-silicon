@@ -6,7 +6,7 @@ defmodule BeamFsm.SchedulerTest do
 
 
   test "submit_task" do
-    pid = start_supervised!({BeamFsm.Scheduler, %{counter: 5, fact: 0, predicate: true, task: fn x -> x + 1 end,  facts: [], tasks: []}})
+    pid = start_supervised!({BeamFsm.Scheduler, %{  facts: [], tasks: []}})
     
     _task_to_add = Core.create_task("Check counter = 5", fn x-> x * 10 end)
     assert    BeamFsm.Scheduler.submit_task(pid, fn x-> x * 10 end) == 20
