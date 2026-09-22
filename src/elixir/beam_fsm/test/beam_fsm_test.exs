@@ -7,16 +7,16 @@ defmodule BeamFsm.SchedulerTest do
 
   test "submit_task" do
     pid = start_supervised!({BeamFsm.Scheduler, %{  facts: [], tasks: []}})
-    
-    _task_to_add = Core.create_task("Check counter = 5", fn x-> x * 10 end)
-    assert    BeamFsm.Scheduler.submit_task(pid, fn x-> x * 10 end) == 20
+    task = Core.create_task("predicate 3", &Core.predicate_3/1)
+    assert    BeamFsm.Scheduler.submit_task(pid, task)
    
 
   end
   test "add_fact" do
-    task_to_add = &Core.predicate_3/1
-    pid = start_supervised!({BeamFsm.Scheduler, %{counter: 5, fact: 0, predicate: true, task: task_to_add,  facts: [], tasks: [task_to_add]}})
-    assert   ! BeamFsm.Scheduler.add_fact(pid, %{value: 100})
+
+    task = Core.create_task("predicate 3", &Core.predicate_3/1)
+    pid = start_supervised!({BeamFsm.Scheduler, %{ facts: [], tasks: [task]}})
+    assert    BeamFsm.Scheduler.add_fact(pid, %{value: 100})
     assert    BeamFsm.Scheduler.add_fact(pid, %{value: 99})
 
   end

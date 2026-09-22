@@ -12,6 +12,6 @@ defmodule BeamFsm.Scheduler.Core do
     false
   end
   def run_predicates_on_facts(facts, predicates) do
-    Enum.each(facts, fn f -> Enum.each(predicates, fn p -> p.(f) end) end ) 
+    Enum.each(facts, fn f -> Enum.each(predicates, fn p -> p.predicate.(f) end) end ) 
   end
 end
