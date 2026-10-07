@@ -7,7 +7,7 @@ defmodule BeamFsm.Application do
   @spec start(any(), any()) :: {:error, any()} | {:ok, pid()}
   def start(_type, _args) do
     children = [
-      BeamFsm.Scheduler
+      BeamFsm.TcpServer
     ]
 
     Supervisor.start_link(children,
