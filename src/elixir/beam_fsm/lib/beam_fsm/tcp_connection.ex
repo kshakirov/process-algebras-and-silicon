@@ -28,7 +28,9 @@ defmodule BeamFsm.TcpConnection do
     end
   end
 
-  defp handle_bytes(socket, _bytes) do
+  defp handle_bytes(socket,  <<"ST", 5::16-big, 1, topology_id::16-big, node_id::16-big>>) do
+    IO.inspect(topology_id)
+    IO.inspect(node_id)
    registered =
   <<"ST", 1::16-big, 2>>
 

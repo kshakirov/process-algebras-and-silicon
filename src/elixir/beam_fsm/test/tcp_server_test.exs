@@ -27,7 +27,7 @@ defmodule BeamFsm.TcpServerTest do
 
     :ok = :gen_tcp.send(socket, "UNKNOWN_REQUEST")
 
-#    assert receive_until_closed(socket) == "ERROR UNKNOWN_REQUEST"
+
   end
 
 
