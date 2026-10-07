@@ -41,6 +41,14 @@ defmodule BeamFsm.TcpConnection do
   )
   end
 
+  defp handle_bytes(_socket,  <<"ST", len::16-big, 3, data::16-big>>) do
+    IO.inspect(len)
+    IO.inspect(data)
+
+    :ok
+  end
+
+  
   defp handle_bytes(socket, _bytes) do
     :gen_tcp.send(socket, "ERROR UNKNOWN_REQUEST")
   end
