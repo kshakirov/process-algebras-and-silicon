@@ -41,7 +41,7 @@ defmodule BeamFsm.TcpConnection do
   )
   end
 
-  defp handle_bytes(_socket,  <<"ST", len::16-big, 3, data::16-big>>) do
+  defp handle_bytes(_socket,  <<"ST", len::16-big, 3, data>>) do
     IO.inspect(len)
     IO.inspect(data)
 

@@ -21,7 +21,7 @@ defmodule BeamFsm.TcpServerTest do
     :ok =
       :gen_tcp.send(socket, data)
 
-    assert {:ok}
+
 
   end
 
