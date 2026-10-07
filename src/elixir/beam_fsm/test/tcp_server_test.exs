@@ -17,7 +17,7 @@ defmodule BeamFsm.TcpServerTest do
 
 
     assert {:ok, registered} == response
-    data = <<"ST", 1::16-big, 3, 1::16-big>>
+    data = <<"ST", 2::16-big, 3, 0x2A>>
     :ok =
       :gen_tcp.send(socket, data)
 
