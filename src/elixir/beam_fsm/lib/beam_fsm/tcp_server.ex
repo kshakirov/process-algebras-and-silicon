@@ -36,9 +36,15 @@ defmodule BeamFsm.TcpServer do
   @impl true
   def handle_info({:register, node_id, pid}, state) do
     nodes = Map.put(state.nodes, node_id, pid)
-
+    handle_nodes(nodes)
     IO.inspect(nodes, label: "Registered nodes")
 
     {:noreply, %{state | nodes: nodes}}
   end
+
+  def handle_nodes(%{1 => k, 2 => v}) do
+    send(k, {:peer, v})
+  end
+
+  def handle_nodes(_), do: :nothing
 end

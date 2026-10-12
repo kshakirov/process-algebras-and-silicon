@@ -7,17 +7,24 @@ defmodule BeamFsm.TcpConnection do
     receive do
       {:socket, socket} ->
         :ok = :inet.setopts(socket, active: :once)
-        loop(socket)
+        loop(socket, nil)
     end
   end
 
-  defp loop(socket) do
+  defp loop(socket, peer_id) do
     receive do
       {:tcp, ^socket, bytes} ->
-        handle_bytes(socket, bytes)
+        handle_bytes(socket, bytes, peer_id)
 
         :ok = :inet.setopts(socket, active: :once)
-        loop(socket)
+        loop(socket, peer_id)
+
+      {:peer, pid} ->
+        loop(socket, pid)
+
+      {:data_from_prefix_generator, data} ->
+        :gen_tcp.send(socket, data)
+        loop(socket, peer_id)
 
       {:tcp_closed, ^socket} ->
         :ok
@@ -28,7 +35,11 @@ defmodule BeamFsm.TcpConnection do
     end
   end
 
-  defp handle_bytes(socket, <<"ST", 5::16-big, 1, topology_id::16-big, node_id::16-big>>) do
+  defp handle_bytes(
+         socket,
+         <<"ST", 5::16-big, 1, topology_id::16-big, node_id::16-big>>,
+         _peer_id
+       ) do
     IO.inspect(topology_id)
     IO.inspect(node_id)
 
@@ -38,14 +49,15 @@ defmodule BeamFsm.TcpConnection do
     send(BeamFsm.TcpServer, {:register, node_id, self()})
   end
 
-  defp handle_bytes(_socket, <<"ST", len::16-big, 3, data>>) do
+  defp handle_bytes(_socket, <<"ST", len::16-big, 3, data>>, peer_id) do
     IO.inspect(len)
     IO.inspect(data)
+    send(peer_id, {:data_from_prefix_generator, data})
 
     :ok
   end
 
-  defp handle_bytes(socket, _bytes) do
+  defp handle_bytes(socket, _bytes, _peer_id) do
     :gen_tcp.send(socket, "ERROR UNKNOWN_REQUEST")
   end
 end
