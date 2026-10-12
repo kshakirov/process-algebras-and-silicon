@@ -17,24 +17,28 @@ defmodule BeamFsm.TcpServer do
     ]
 
     {:ok, listen_socket} = :gen_tcp.listen(@port, options)
-
-    {:ok, listen_socket, {:continue, :accept}}
+    spawn(fn -> accept_loop(listen_socket) end)
+    {:ok, %{listen_socket: listen_socket, nodes: %{}}}
+    #    {:ok, listen_socket}
   end
 
-  @impl true
-  def handle_continue(:accept, listen_socket) do
+  defp accept_loop(listen_socket) do
     {:ok, socket} = :gen_tcp.accept(listen_socket)
-
 
     handler = BeamFsm.TcpConnection.start()
 
-    :ok =
-      :gen_tcp.controlling_process(socket, handler)
-
+    :ok = :gen_tcp.controlling_process(socket, handler)
     send(handler, {:socket, socket})
 
-    {:noreply, listen_socket, {:continue, :accept}}
+    accept_loop(listen_socket)
   end
 
+  @impl true
+  def handle_info({:register, node_id, pid}, state) do
+    nodes = Map.put(state.nodes, node_id, pid)
 
+    IO.inspect(nodes, label: "Registered nodes")
+
+    {:noreply, %{state | nodes: nodes}}
+  end
 end

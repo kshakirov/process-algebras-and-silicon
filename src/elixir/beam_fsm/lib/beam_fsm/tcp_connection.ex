@@ -2,7 +2,7 @@ defmodule BeamFsm.TcpConnection do
   def start do
     spawn(fn -> await_socket() end)
   end
-  
+
   defp await_socket do
     receive do
       {:socket, socket} ->
@@ -28,27 +28,23 @@ defmodule BeamFsm.TcpConnection do
     end
   end
 
-  defp handle_bytes(socket,  <<"ST", 5::16-big, 1, topology_id::16-big, node_id::16-big>>) do
+  defp handle_bytes(socket, <<"ST", 5::16-big, 1, topology_id::16-big, node_id::16-big>>) do
     IO.inspect(topology_id)
     IO.inspect(node_id)
-   registered =
-  <<"ST", 1::16-big, 2>>
 
-  :gen_tcp.send(
-    socket,
-    registered
+    registered = <<"ST", 1::16-big, 2>>
+    :gen_tcp.send(socket, registered)
 
-  )
+    send(BeamFsm.TcpServer, {:register, node_id, self()})
   end
 
-  defp handle_bytes(_socket,  <<"ST", len::16-big, 3, data>>) do
+  defp handle_bytes(_socket, <<"ST", len::16-big, 3, data>>) do
     IO.inspect(len)
     IO.inspect(data)
 
     :ok
   end
 
-  
   defp handle_bytes(socket, _bytes) do
     :gen_tcp.send(socket, "ERROR UNKNOWN_REQUEST")
   end
