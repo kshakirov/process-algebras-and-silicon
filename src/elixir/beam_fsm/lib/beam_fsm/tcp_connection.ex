@@ -7,24 +7,23 @@ defmodule BeamFsm.TcpConnection do
     receive do
       {:socket, socket} ->
         :ok = :inet.setopts(socket, active: :once)
-        loop(socket, nil)
+        loop(socket, nil, <<>>)
     end
   end
 
-  defp loop(socket, peer_id) do
+  defp loop(socket, peer_id, buffer) do
     receive do
       {:tcp, ^socket, bytes} ->
-        handle_bytes(socket, bytes, peer_id)
-
+        new_buffer = framer(socket, bytes, peer_id, buffer)
         :ok = :inet.setopts(socket, active: :once)
-        loop(socket, peer_id)
+        loop(socket, peer_id, new_buffer)
 
       {:peer, pid} ->
-        loop(socket, pid)
+        loop(socket, pid, buffer)
 
       {:data_from_prefix_generator, data} ->
         :gen_tcp.send(socket, data)
-        loop(socket, peer_id)
+        loop(socket, peer_id, buffer)
 
       {:tcp_closed, ^socket} ->
         :ok
@@ -33,6 +32,26 @@ defmodule BeamFsm.TcpConnection do
         IO.inspect(reason, label: "TCP error")
         :gen_tcp.close(socket)
     end
+  end
+
+  defp framer(socket, bytes, peer_id, buffer) do
+    IO.inspect(buffer <> bytes)
+    extract_frames(socket, peer_id, buffer <> bytes)
+  end
+
+  defp extract_frames(socket, peer_id, data) when byte_size(data) < 4 do
+    data
+  end
+
+  # here I will check for payload
+  defp extract_frames(socket, peer_id, data) when byte_size(data) >= 4 do
+    handle_bytes(socket, data, peer_id)
+    <<>>
+  end
+
+  # here i will fail the rest 
+  defp extract_frames(socket, peer_id, data) when binary_part(data, 0, 2) != "ST" < 4 do
+    handle_bytes(socket, data, peer_id)
   end
 
   defp handle_bytes(
