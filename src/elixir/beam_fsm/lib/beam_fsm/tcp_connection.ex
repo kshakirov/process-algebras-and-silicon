@@ -70,7 +70,7 @@ defmodule BeamFsm.TcpConnection do
 
   defp handle_bytes(
          socket,
-         <<"ST", payload_length::16-big, 2, topology_data::binary>>,
+         <<"ST", payload_length::16-big, 3, topology_data::binary>>,
          _peer_id
        ) do
     IO.inspect(topology_data)
@@ -78,13 +78,13 @@ defmodule BeamFsm.TcpConnection do
 
     send(
       BeamFsm.OrchestratorClient,
-      {:createTopology, <<"ST", payload_length::16-big, 2, topology_data::binary>>}
+      {:createTopology, <<"ST", payload_length::16-big, 3, topology_data::binary>>}
     )
 
     :gen_tcp.send(socket, 0)
   end
 
-  defp handle_bytes(_socket, <<"ST", len::16-big, 3, data>>, peer_id) do
+  defp handle_bytes(_socket, <<"ST", len::16-big, 4, data>>, peer_id) do
     IO.inspect(len)
     IO.inspect(data)
     send(peer_id, {:data_from_prefix_generator, data})
