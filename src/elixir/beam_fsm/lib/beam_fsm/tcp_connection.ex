@@ -57,6 +57,21 @@ defmodule BeamFsm.TcpConnection do
     <<>>
   end
 
+  defp extract_frames(socket, peer_id, <<"ST", payload_length::16-big, data::binary>>)
+       when byte_size(data) > payload_length do
+    handle_bytes(
+      socket,
+      <<"ST", payload_length::16-big, binary_part(data, 0, payload_length)::binary>>,
+      peer_id
+    )
+
+    extract_frames(
+      socket,
+      peer_id,
+      binary_part(data, payload_length, byte_size(data) - payload_length)
+    )
+  end
+
   # here i will fail the rest 
   defp extract_frames(socket, peer_id, data) when binary_part(data, 0, 2) != "ST" < 4 do
     handle_bytes(socket, data, peer_id)
