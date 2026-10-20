@@ -51,7 +51,8 @@ defmodule BeamFsm.OrchestratorClient do
   @impl true
   def handle_info({:createTopology, bytes}, state) do
     IO.inspect(bytes, label: "Received from Tcp Connection")
-
+    :gen_tcp.send(state.socket, bytes)
+    IO.puts("All data sent to Prolog")
     {:noreply, state}
   end
 end
