@@ -24,6 +24,8 @@ defmodule BeamFsm.OrchestratorClient do
 
     case :gen_tcp.connect(state.host, state.port, options) do
       {:ok, socket} ->
+        :ok = :inet.setopts(socket, active: :once)
+
         new_state = %{
           state
           | socket: socket,
@@ -35,5 +37,21 @@ defmodule BeamFsm.OrchestratorClient do
       {:error, reason} ->
         {:stop, reason, state}
     end
+  end
+
+  @impl true
+  def handle_info({:tcp, socket, bytes}, state) do
+    IO.inspect(bytes, label: "Received from Prolog")
+
+    :ok = :inet.setopts(socket, active: :once)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info({:createTopology, bytes}, state) do
+    IO.inspect(bytes, label: "Received from Tcp Connection")
+
+    {:noreply, state}
   end
 end

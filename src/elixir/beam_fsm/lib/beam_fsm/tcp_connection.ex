@@ -68,6 +68,22 @@ defmodule BeamFsm.TcpConnection do
     send(BeamFsm.TcpServer, {:register, node_id, self()})
   end
 
+  defp handle_bytes(
+         socket,
+         <<"ST", payload_length::16-big, 2, topology_data::binary>>,
+         _peer_id
+       ) do
+    IO.inspect(topology_data)
+    IO.puts("Now sending to Orchestrator")
+
+    send(
+      BeamFsm.OrchestratorClient,
+      {:createTopology, <<"ST", payload_length::16-big, 2, topology_data::binary>>}
+    )
+
+    :gen_tcp.send(socket, 0)
+  end
+
   defp handle_bytes(_socket, <<"ST", len::16-big, 3, data>>, peer_id) do
     IO.inspect(len)
     IO.inspect(data)
