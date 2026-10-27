@@ -43,11 +43,24 @@ defmodule BeamFsm.OrchestratorClient do
   @impl true
   def handle_info({:tcp, socket, bytes}, state) do
     IO.inspect(bytes, label: "Received from Prolog")
-    data = handle_prolog_response(socket, state.data <> bytes)
+    response = handle_prolog_response(socket, state.data <> bytes)
+
+    new_state =
+      case response do
+        {<<>>, tail} ->
+          %{state | data: tail}
+
+        {data, <<>>} ->
+          IO.puts("Matches without tail")
+          %{state | data: <<>>}
+
+        {data, tail} ->
+          IO.puts("Matches with tail")
+          %{state | data: tail}
+      end
 
     :ok = :inet.setopts(socket, active: :once)
-
-    {:noreply, state}
+    {:noreply, new_state}
   end
 
   @impl true
@@ -61,12 +74,14 @@ defmodule BeamFsm.OrchestratorClient do
   defp handle_prolog_response(socket, <<"ST", payload_length::16-big, data::binary>>)
        when byte_size(data) < payload_length do
     IO.puts("My handler is not yet  working, not enough bytes ")
-    <<"ST", payload_length::16-big, data::binary>>
+    {<<>>, <<"ST", payload_length::16-big, data::binary>>}
   end
 
   defp handle_prolog_response(socket, <<"ST", payload_length::16-big, 6, data::binary>>)
-       when byte_size(data) == payload_length - 1 do
+       when byte_size(data) >= payload_length - 1 do
     IO.puts("My handler is working ")
-    <<"ST", payload_length::16-big, 6, data::binary>>
+
+    {<<"ST", payload_length::16-big, 6, binary_part(data, 0, payload_length - 1)::binary>>,
+     binary_part(data, payload_length - 1, byte_size(data) - (payload_length - 1))}
   end
 end
