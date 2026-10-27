@@ -12,7 +12,8 @@ defmodule BeamFsm.OrchestratorClient do
       host: @host,
       port: @port,
       socket: nil,
-      status: :connecting
+      status: :connecting,
+      data: <<>>
     }
 
     {:ok, state, {:continue, :connect}}
@@ -42,6 +43,7 @@ defmodule BeamFsm.OrchestratorClient do
   @impl true
   def handle_info({:tcp, socket, bytes}, state) do
     IO.inspect(bytes, label: "Received from Prolog")
+    data = handle_prolog_response(socket, state.data <> bytes)
 
     :ok = :inet.setopts(socket, active: :once)
 
@@ -54,5 +56,17 @@ defmodule BeamFsm.OrchestratorClient do
     :gen_tcp.send(state.socket, bytes)
     IO.puts("All data sent to Prolog")
     {:noreply, state}
+  end
+
+  defp handle_prolog_response(socket, <<"ST", payload_length::16-big, data::binary>>)
+       when byte_size(data) < payload_length do
+    IO.puts("My handler is not yet  working, not enough bytes ")
+    <<"ST", payload_length::16-big, data::binary>>
+  end
+
+  defp handle_prolog_response(socket, <<"ST", payload_length::16-big, 6, data::binary>>)
+       when byte_size(data) == payload_length - 1 do
+    IO.puts("My handler is working ")
+    <<"ST", payload_length::16-big, 6, data::binary>>
   end
 end
