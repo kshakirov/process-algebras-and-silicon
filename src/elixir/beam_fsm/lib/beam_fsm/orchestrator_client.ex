@@ -52,10 +52,12 @@ defmodule BeamFsm.OrchestratorClient do
 
         {data, <<>>} ->
           IO.puts("Matches without tail")
+          send(BeamFsm.TcpServer, {:topology_map, data})
           %{state | data: <<>>}
 
         {data, tail} ->
           IO.puts("Matches with tail")
+          send(BeamFsm.TcpServer, {:topology_map, data})
           %{state | data: tail}
       end
 
